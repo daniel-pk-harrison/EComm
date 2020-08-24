@@ -10,6 +10,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\EComm.DataAccess\EComm.DataAccess.csproj" />
     <ProjectReference Include="..\EComm.Model\EComm.Model.csproj" />
   </ItemGroup>
 
