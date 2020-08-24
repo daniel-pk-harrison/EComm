@@ -5,14 +5,21 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using EComm.Web.Models;
+using EComm.DataAccess;
 
 namespace EComm.Web.Controllers
 {
     public class HomeController : Controller
     {
+        private ECommDataContext _dataContext;
+        public HomeController(ECommDataContext dataContext)
+        {
+            _dataContext = dataContext;
+        }
         public IActionResult Index()
         {
-            return View();
+            return Content($"Number of products: {_dataContext.Products.Count()}");
+
         }
 
         public IActionResult About()
