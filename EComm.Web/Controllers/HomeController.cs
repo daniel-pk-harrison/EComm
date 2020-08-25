@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using EComm.Web.Models;
 using EComm.DataAccess;
+using Microsoft.EntityFrameworkCore;
 
 namespace EComm.Web.Controllers
 {
@@ -18,7 +19,8 @@ namespace EComm.Web.Controllers
         }
         public IActionResult Index()
         {
-            return Content($"Number of products: {_dataContext.Products.Count()}");
+            var products = _dataContext.Products.Include(p => p.Supplier).ToList();
+            return View(products);
 
         }
 
