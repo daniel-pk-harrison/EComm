@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using EComm.DataAccess;
+using EComm.Model;
 using EComm.Web.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -52,6 +53,37 @@ namespace EComm.Web.Controllers
                 }).ToList()
             };
             return View(pvm);
+        }
+
+        [HttpPost]
+        public IActionResult Edit(ProductEditViewModel pvm)
+        {
+            //model is invalid, reconstruct our list of suppliers and show edit view
+            if (!ModelState.IsValid)
+            {
+                var suppliers = _dataContext.Suppliers.ToList();
+                pvm.Suppliers = suppliers.Select(s => new SelectListItem
+                {
+                    Text = s.CompanyName,
+                    Value = s.Id.ToString()
+                }).ToList();
+                return View(pvm);
+            }
+            //view model is valid, create a new product using the form data
+            var product = new Product
+            {
+                Id = pvm.Id,
+                ProductName = pvm.ProductName,
+                UnitPrice = pvm.UnitPrice,
+                Package = pvm.Package,
+                IsDiscontinued = pvm.IsDiscontinued,
+                SupplierId = pvm.SupplierId
+            };
+            //update our datacontext, go back to home/index
+            _dataContext.Attach(product);
+            _dataContext.Entry(product).State = EntityState.Modified;
+            _dataContext.SaveChanges();
+            return RedirectToAction("Index", "Home");
         }
     }
 }
