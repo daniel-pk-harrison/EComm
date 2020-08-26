@@ -19,8 +19,7 @@ namespace EComm.Web.Controllers
         }
         public IActionResult Index()
         {
-            var products = _dataContext.Products.Include(p => p.Supplier).ToList();
-            return View(products);
+            return View();
 
         }
 
