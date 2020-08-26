@@ -44,7 +44,7 @@
                 @Html.DisplayFor(modelItem => item.Supplier.CompanyName)
             </td>
             <td>
-                @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
+                <a asp-controller="Product" asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
                 @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
                 @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
             </td>

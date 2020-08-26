@@ -20,6 +20,16 @@ namespace EComm.Web.Controllers
         public IActionResult Detail(int id)
         {
             var product = _dataContext.Products.Include(p => p.Supplier).SingleOrDefault(p => p.Id == id);
+            //linq doesnt find a product return 404
+            if (product == null) return NotFound();
+            return View(product);
+        }
+
+        public IActionResult Edit(int id)
+        {
+            //find the product by id
+            var product = _dataContext.Products.SingleOrDefault(p => p.Id == id);
+            //linq doesnt find a product return 404
             if (product == null) return NotFound();
             return View(product);
         }
