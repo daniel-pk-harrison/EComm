@@ -16,9 +16,11 @@ namespace EComm.Web.Controllers
         {
             _dataContext = dataContext;
         }
+        [Route("product/{id:int}")]
         public IActionResult Detail(int id)
         {
             var product = _dataContext.Products.Include(p => p.Supplier).SingleOrDefault(p => p.Id == id);
+            if (product == null) return NotFound();
             return View(product);
         }
     }
