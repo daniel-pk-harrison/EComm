@@ -64,6 +64,8 @@ namespace EComm.Web
             app.UseCookiePolicy();
             app.UseSession();
             app.UseAuthentication();
+            app.UseStatusCodePagesWithReExecute("/error/{0}");
+
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
