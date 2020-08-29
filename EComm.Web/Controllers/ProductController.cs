@@ -6,6 +6,7 @@ using EComm.DataAccess;
 using EComm.Model;
 using EComm.Web.Models;
 using EComm.Web.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -20,6 +21,7 @@ namespace EComm.Web.Controllers
         {
             _dataContext = dataContext;
         }
+        [Authorize(Policy = "AdminsOnly")]
         [Route("product/{id:int}")]
         public IActionResult Detail(int id)
         {
