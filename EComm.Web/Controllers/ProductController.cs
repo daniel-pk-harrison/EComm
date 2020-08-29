@@ -137,5 +137,51 @@ namespace EComm.Web.Controllers
             HttpContext.Session.Clear();
             return View("ThankYou");
         }
+
+        [HttpGet("api/products")]
+        public IActionResult Get()
+        {
+            var products = _dataContext.Products.ToList();
+            return new ObjectResult(products);
+        }
+
+        [HttpGet("api/products/{id:int}")]
+        public IActionResult Get(int id)
+        {
+            var product = _dataContext.Products.SingleOrDefault(p => p.Id == id);
+            if (product == null)
+            {
+                return NotFound();
+            }
+            return new ObjectResult(product);
+        }
+
+        [HttpPut("api/products/{id:int}")]
+        public IActionResult Put(int id, [FromBody]Product product)
+        {
+            //if product doesn't exist in request or the id in the request doesn't match the product return a badrequest
+            if (product == null || product.Id != id)
+            {
+                return BadRequest();
+            }
+            var existing = _dataContext.Products.SingleOrDefault(p => p.Id == id);
+
+            //if product doesn't exist return not found
+            if (existing == null)
+            {
+                return NotFound();
+            }
+
+            //update our datacontext, with the request's info
+            existing.ProductName = product.ProductName;
+            existing.UnitPrice = product.UnitPrice;
+            existing.Package = product.Package;
+            existing.IsDiscontinued = product.IsDiscontinued;
+            existing.SupplierId = product.SupplierId;
+            _dataContext.Attach(existing);
+            _dataContext.Entry(existing).State = EntityState.Modified;
+            _dataContext.SaveChanges();
+            return new NoContentResult();
+        }
     }
 }
