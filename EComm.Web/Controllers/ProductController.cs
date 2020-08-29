@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using EComm.DataAccess;
 using EComm.Model;
+using EComm.Web.Models;
 using EComm.Web.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -84,6 +85,55 @@ namespace EComm.Web.Controllers
             _dataContext.Entry(product).State = EntityState.Modified;
             _dataContext.SaveChanges();
             return RedirectToAction("Index", "Home");
+        }
+        [HttpPost]
+        public IActionResult AddToCart(int id, int quantity)
+        {
+            var product = _dataContext.Products.SingleOrDefault(p => p.Id == id);
+            var totalCost = product.UnitPrice * quantity;
+            string message = $"You added {product.ProductName} (x {quantity}) to cart at a total cost of {totalCost:C}.";
+
+            var cart = ShoppingCart.GetFromSession(HttpContext.Session);    //get our cart from cache
+            var lineItem = cart.LineItems.SingleOrDefault(item => item.Product.Id == id);  //see if the item we are adding to cart already exists
+            if (lineItem != null)
+            {
+                lineItem.Quantity += quantity; //item exists, update quantity
+            }
+            else
+            {
+                //doesn't exist, add to the line itme list
+                cart.LineItems.Add(new ShoppingCart.LineItem
+                {
+                    Product = product,
+                    Quantity = quantity
+                });
+            }
+            //update cache
+            ShoppingCart.StoreInSession(cart, HttpContext.Session);
+            return PartialView("_AddedToCartPartial", message);
+        }
+
+        public IActionResult Cart()
+        {
+            //get our cart from cache and display in view using viewmodel
+            var cart = ShoppingCart.GetFromSession(HttpContext.Session);
+            var cvm = new CartViewModel() { Cart = cart };
+
+            return View(cvm);
+        }
+
+        [HttpPost]
+        public IActionResult Checkout(CartViewModel cvm)
+        {
+            if (!ModelState.IsValid)
+            {
+                //cart not valid, get from cache and show the cart view again
+                cvm.Cart = ShoppingCart.GetFromSession(HttpContext.Session);
+                return View("Cart", cvm);
+            }
+            //else clear from cache and show thank you
+            HttpContext.Session.Clear();
+            return View("ThankYou");
         }
     }
 }

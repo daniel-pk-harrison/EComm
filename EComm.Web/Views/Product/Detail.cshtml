@@ -52,3 +52,29 @@
     <a asp-controller="Product" asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
     <a asp-action="Index">Back to List</a>
 </div>
+<form id="addToCartForm" asp-controller="Product" asp-action="AddToCart" asp-route-id="@Model.Id">
+    <input name="quantity" size="3" />
+    <input type="submit" value="Add to Cart" />
+</form>
+<div id="message"></div>
+@*ajax POST that updates the message div with the returned string from the AddToCart action*@
+@section Scripts
+{ 
+    <script>
+        $(function () {
+            $('form').submit(function (e) {
+                var formData = {
+                    'quantity': $('input[name=quantity]').val()
+                };
+                $.ajax({
+                    type: 'POST',
+                    url: $('#addToCartForm').attr('action'),
+                    data: formData
+                }).done(function (r) {
+                    $('#message').html(r);
+                });
+                event.preventDefault();
+            });
+        });
+    </script>
+}

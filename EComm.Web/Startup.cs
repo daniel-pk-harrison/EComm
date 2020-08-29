@@ -34,7 +34,8 @@ namespace EComm.Web
             });
 
             services.AddDbContext<ECommDataContext>(options => options.UseSqlServer(Configuration.GetConnectionString("ECommConnection")));
-
+            services.AddMemoryCache();
+            services.AddSession();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }
 
@@ -54,7 +55,7 @@ namespace EComm.Web
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseCookiePolicy();
-
+            app.UseSession();
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
